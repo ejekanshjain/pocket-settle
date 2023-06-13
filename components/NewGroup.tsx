@@ -36,7 +36,8 @@ export const NewGroup = () => {
           if (!name.trim()) return
 
           const docRef = await addDoc(collection(firestore, 'groups'), {
-            name: name.trim()
+            name: name.trim(),
+            owner: user.uid
           })
 
           const newGroups = profile?.groups
