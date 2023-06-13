@@ -1,4 +1,5 @@
 import { Stack, useRouter, useSegments } from 'expo-router'
+import { StatusBar } from 'expo-status-bar'
 import { User, onAuthStateChanged } from 'firebase/auth'
 import { doc, onSnapshot } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
@@ -62,6 +63,7 @@ export default function RootLayout() {
 
   return (
     <PaperProvider>
+      <StatusBar style="dark" />
       <AppStateProvider
         value={{
           user,
