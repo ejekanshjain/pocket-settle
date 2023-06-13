@@ -1,5 +1,5 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
-import { doc, onSnapshot } from 'firebase/firestore'
+import { doc, onSnapshot, setDoc } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 import { Group } from '../../components/Group'
 import { NewGroup } from '../../components/NewGroup'
@@ -9,7 +9,7 @@ import { firestore } from '../../lib/firebase'
 const TopTabs = createMaterialTopTabNavigator()
 
 export default function Index() {
-  const { profile } = useAppState()
+  const { user, profile } = useAppState()
 
   const [groups, setGroups] = useState<
     {
@@ -21,21 +21,36 @@ export default function Index() {
   useEffect(() => {
     const unsubs: any[] = []
     profile?.groups?.forEach(group => {
-      const unsub = onSnapshot(doc(firestore, 'groups', group), doc => {
-        const docData = doc.data()
-        if (!docData) return
-        setGroups(prev => {
-          const index = prev.findIndex(g => g.id === doc.id)
-          if (index > -1) {
-            prev[index]!.name = docData.name
-          } else {
-            prev.push({
-              id: doc.id,
-              name: docData.name
-            })
-          }
-          return [...prev]
-        })
+      const unsub = onSnapshot(doc(firestore, 'groups', group), d => {
+        const docData = d.data()
+        if (!docData) {
+          setGroups(prev => {
+            const index = prev.findIndex(g => g.id === d.id)
+            if (index > -1) prev.splice(index, 1)
+            return [...prev]
+          })
+          if (user?.uid)
+            setDoc(
+              doc(firestore, 'profiles', user.uid),
+              {
+                groups: profile.groups?.filter(pg => pg !== group)
+              },
+              {
+                merge: true
+              }
+            )
+        } else {
+          setGroups(prev => {
+            const index = prev.findIndex(g => g.id === d.id)
+            if (index > -1) prev[index]!.name = docData.name
+            else
+              prev.push({
+                id: d.id,
+                name: docData.name
+              })
+            return [...prev]
+          })
+        }
       })
       unsubs.push(unsub)
     })
