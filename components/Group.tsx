@@ -1,7 +1,7 @@
-import { collection, onSnapshot } from 'firebase/firestore'
+import { addDoc, collection, onSnapshot } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
-import { View } from 'react-native'
-import { Button } from 'react-native-paper'
+import { FlatList, View } from 'react-native'
+import { Button, List, Modal, Portal, TextInput } from 'react-native-paper'
 import { firestore } from '../lib/firebase'
 
 type Member = {
@@ -34,6 +34,8 @@ export const Group = (props: any) => {
   const [members, setMembers] = useState<Member[]>([])
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [transfers, setTransfers] = useState<Transfer[]>([])
+  const [membersModal, setMembersModal] = useState(false)
+  const [newMemberName, setNewMemberName] = useState('')
 
   useEffect(() => {
     const unsubscribeMembers = onSnapshot(
@@ -98,8 +100,6 @@ export const Group = (props: any) => {
     }
   }, [groupId])
 
-  console.log({ members, expenses, transfers })
-
   return (
     <View
       style={{
@@ -108,7 +108,51 @@ export const Group = (props: any) => {
         justifyContent: 'center'
       }}
     >
-      <Button mode="contained-tonal">Click here</Button>
+      <Button mode="contained-tonal" onPress={() => setMembersModal(true)}>
+        Members
+      </Button>
+      <Portal>
+        <Modal
+          visible={membersModal}
+          onDismiss={() => setMembersModal(false)}
+          contentContainerStyle={{
+            backgroundColor: 'white',
+            padding: 20
+          }}
+        >
+          <TextInput
+            label="Add new member"
+            mode="outlined"
+            value={newMemberName}
+            onChangeText={text => {
+              setNewMemberName(text)
+            }}
+          />
+          <Button
+            mode="contained-tonal"
+            onPress={() => {
+              if (!newMemberName.trim()) return
+              addDoc(collection(firestore, 'groups', groupId, 'members'), {
+                name: newMemberName.trim()
+              })
+              setNewMemberName('')
+            }}
+          >
+            Add
+          </Button>
+          <FlatList
+            data={members}
+            renderItem={item => (
+              <List.Item
+                title={item.item.name}
+                titleStyle={{
+                  color: 'black'
+                }}
+              />
+            )}
+          />
+        </Modal>
+      </Portal>
     </View>
   )
 }

@@ -2,6 +2,7 @@ import { Stack, useRouter, useSegments } from 'expo-router'
 import { User, onAuthStateChanged } from 'firebase/auth'
 import { doc, onSnapshot } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
+import { PaperProvider } from 'react-native-paper'
 import { AppStateProvider, Profile } from '../context/App'
 import { fireauth, firestore } from '../lib/firebase'
 
@@ -60,38 +61,40 @@ export default function RootLayout() {
   }, [ready, user, profile, segments])
 
   return (
-    <AppStateProvider
-      value={{
-        user,
-        profile
-      }}
-    >
-      <Stack>
-        <Stack.Screen
-          name="(auth)/signin"
-          options={{
-            headerShown: false
-          }}
-        />
-        <Stack.Screen
-          name="(loading)/loading"
-          options={{
-            headerShown: false
-          }}
-        />
-        <Stack.Screen
-          name="(profile)/setup"
-          options={{
-            headerShown: false
-          }}
-        />
-        <Stack.Screen
-          name="(main)"
-          options={{
-            headerShown: false
-          }}
-        />
-      </Stack>
-    </AppStateProvider>
+    <PaperProvider>
+      <AppStateProvider
+        value={{
+          user,
+          profile
+        }}
+      >
+        <Stack>
+          <Stack.Screen
+            name="(auth)/signin"
+            options={{
+              headerShown: false
+            }}
+          />
+          <Stack.Screen
+            name="(loading)/loading"
+            options={{
+              headerShown: false
+            }}
+          />
+          <Stack.Screen
+            name="(profile)/setup"
+            options={{
+              headerShown: false
+            }}
+          />
+          <Stack.Screen
+            name="(main)"
+            options={{
+              headerShown: false
+            }}
+          />
+        </Stack>
+      </AppStateProvider>
+    </PaperProvider>
   )
 }
