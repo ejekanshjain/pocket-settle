@@ -1,7 +1,3 @@
-import { config } from 'dotenv'
-
-config()
-
 export default {
   expo: {
     scheme: 'com.ejekanshjain.pocket-settle',
@@ -21,15 +17,14 @@ export default {
       supportsTablet: true
     },
     android: {
+      package: 'com.ejekanshjain.pocket-settle',
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
         backgroundColor: '#000000'
-      }
-    },
-    android: {
-      package: 'com.ejekanshjain.pocket-settle',
+      },
       versionCode: 1
     },
+    plugins: ['expo-router'],
     extra: {
       firebase: {
         apiKey: process.env.FIREBASE_API_KEY,

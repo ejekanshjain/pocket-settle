@@ -1,4 +1,4 @@
-import { Drawer } from '../../components/Drawer'
+import { Drawer } from 'expo-router/drawer'
 
 export default function MainLayout() {
   return (
